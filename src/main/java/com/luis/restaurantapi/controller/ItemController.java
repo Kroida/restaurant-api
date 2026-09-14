@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/items")
-public class itemController {
+public class ItemController {
     @PostMapping
     public void assignItem() {
         return;
