@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ItemService {
@@ -19,22 +18,23 @@ public class ItemService {
         this.repository = repository;
     }
 
-    public void createItem(ItemRequestDTO itemRequestDTO) {
+    public Item create(ItemRequestDTO itemRequestDTO) {
         Item item = new Item(itemRequestDTO);
         repository.save(item);
+        return item;
     }
 
-    public List<ItemResponseDTO> listAllItems() {
+    public List<ItemResponseDTO> getAll() {
         List<ItemResponseDTO> itemList = repository.findAll().stream().map(ItemResponseDTO::new).toList();
         return itemList;
     }
 
-    public Item findItem(Long id) {
-        Optional<Item> item = repository.findById(id);
-        return item.orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
+    public Item getById(Long id) {
+        Item item = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
+        return item;
     }
 
-    public void updateItem(Long id, ItemRequestDTO itemRequestDTO) {
+    public Item update(Long id, ItemRequestDTO itemRequestDTO) {
         Item item = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
 
         item.setName(itemRequestDTO.name());
@@ -47,9 +47,10 @@ public class ItemService {
 
         repository.save(item);
 
+        return item;
     }
 
-    public void deleteItem(Long id) {
+    public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new ItemNotFoundException("Item não encontrado");
         }
