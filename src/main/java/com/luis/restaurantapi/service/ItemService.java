@@ -29,40 +29,33 @@ public class ItemService {
         return itemList;
     }
 
-    // Alterar depois listItem e update para aceitar exceptions
     public Item findItem(Long id) {
         Optional<Item> item = repository.findById(id);
         return item.orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
     }
 
     public void updateItem(Long id, ItemRequestDTO itemRequestDTO) {
-        if (!repository.existsById(id)) {
-            throw new ItemNotFoundException("Item não encontrado");
-        } else {
-            Optional<Item> item = repository.findById(id);
+        Item item = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
 
-            if (item.isPresent()) {
-                Item foundItem = item.get();
+        item.setName(itemRequestDTO.name());
+        item.setDescription(itemRequestDTO.description());
+        item.setQuantity(itemRequestDTO.quantity());
+        item.setPrice(itemRequestDTO.price());
+        item.setImageUrl(itemRequestDTO.imageUrl());
 
-                foundItem.setName(itemRequestDTO.name());
-                foundItem.setDescription(itemRequestDTO.description());
-                foundItem.setQuantity(itemRequestDTO.quantity());
-                foundItem.setPrice(itemRequestDTO.price());
-                foundItem.setImageUrl(itemRequestDTO.imageUrl());
+        item.setUpdatedAt(LocalDateTime.now());
 
-                foundItem.setUpdatedAt(LocalDateTime.now());
+        repository.save(item);
 
-                repository.save(foundItem);
-            }
-        }
     }
 
-    // Alterar depois para lançar exception caso item não exista
     public void deleteItem(Long id) {
         if (!repository.existsById(id)) {
             throw new ItemNotFoundException("Item não encontrado");
-        } else {
-            repository.deleteById(id);
         }
+        repository.deleteById(id);
     }
 }
+
+
+
