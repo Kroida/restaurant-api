@@ -2,6 +2,7 @@ package com.luis.restaurantapi.service;
 
 import com.luis.restaurantapi.dto.ItemRequestDTO;
 import com.luis.restaurantapi.dto.ItemResponseDTO;
+import com.luis.restaurantapi.exception.ItemNotFoundException;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.repository.ItemRepository;
 import org.springframework.stereotype.Service;
@@ -31,29 +32,37 @@ public class ItemService {
     // Alterar depois listItem e update para aceitar exceptions
     public Item findItem(Long id) {
         Optional<Item> item = repository.findById(id);
-        return item.orElse(null);
+        return item.orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
     }
 
     public void updateItem(Long id, ItemRequestDTO itemRequestDTO) {
-        Optional<Item> item = repository.findById(id);
+        if (!repository.existsById(id)) {
+            throw new ItemNotFoundException("Item não encontrado");
+        } else {
+            Optional<Item> item = repository.findById(id);
 
-        if (item.isPresent()) {
-            Item foundItem = item.get();
+            if (item.isPresent()) {
+                Item foundItem = item.get();
 
-            foundItem.setName(itemRequestDTO.name());
-            foundItem.setDescription(itemRequestDTO.description());
-            foundItem.setQuantity(itemRequestDTO.quantity());
-            foundItem.setPrice(itemRequestDTO.price());
-            foundItem.setImageUrl(itemRequestDTO.imageUrl());
+                foundItem.setName(itemRequestDTO.name());
+                foundItem.setDescription(itemRequestDTO.description());
+                foundItem.setQuantity(itemRequestDTO.quantity());
+                foundItem.setPrice(itemRequestDTO.price());
+                foundItem.setImageUrl(itemRequestDTO.imageUrl());
 
-            foundItem.setUpdatedAt(LocalDateTime.now());
+                foundItem.setUpdatedAt(LocalDateTime.now());
 
-            repository.save(foundItem);
+                repository.save(foundItem);
+            }
         }
     }
 
     // Alterar depois para lançar exception caso item não exista
     public void deleteItem(Long id) {
-        repository.deleteById(id);
+        if (!repository.existsById(id)) {
+            throw new ItemNotFoundException("Item não encontrado");
+        } else {
+            repository.deleteById(id);
+        }
     }
 }
