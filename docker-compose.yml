@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17
-    container_name: postgres_db
+    container_name: restaurant_api_db_postgres
     restart: unless-stopped
 
     environment:
