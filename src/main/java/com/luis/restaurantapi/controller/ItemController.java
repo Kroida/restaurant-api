@@ -4,6 +4,7 @@ import com.luis.restaurantapi.dto.ItemRequestDTO;
 import com.luis.restaurantapi.dto.ItemResponseDTO;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.service.ItemService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemResponseDTO> create(@RequestBody ItemRequestDTO itemRequestDTO) {
+    public ResponseEntity<ItemResponseDTO> create(@Valid @RequestBody ItemRequestDTO itemRequestDTO) {
         Item item = service.create(itemRequestDTO);
 
         ItemResponseDTO itemResponseDTO = new ItemResponseDTO(item);
@@ -43,7 +44,7 @@ public class ItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ItemResponseDTO> update(@PathVariable Long id, @RequestBody ItemRequestDTO itemRequestDTO) {
+    public ResponseEntity<ItemResponseDTO> update(@PathVariable Long id, @Valid @RequestBody ItemRequestDTO itemRequestDTO) {
         Item item = service.update(id, itemRequestDTO);
 
         ItemResponseDTO itemResponseDTO = new ItemResponseDTO(item);
