@@ -1,9 +1,6 @@
 package com.luis.restaurantapi.model;
 
-import com.luis.restaurantapi.dto.ItemRequestDTO;
-
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -20,17 +17,6 @@ public class Item {
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public Item(ItemRequestDTO item) {
-        this.name = item.name();
-        this.description = item.description();
-        this.quantity = item.quantity();
-        this.price = item.price();
-        this.imageUrl = item.imageUrl();
-        
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
 
     public Item() {
     }
