@@ -73,10 +73,6 @@ public class Item {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
