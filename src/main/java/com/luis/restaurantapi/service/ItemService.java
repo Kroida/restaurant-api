@@ -24,9 +24,8 @@ public class ItemService {
         return item;
     }
 
-    public List<ItemResponseDTO> getAll() {
-        List<ItemResponseDTO> itemList = repository.findAll().stream().map(ItemMapper::toResponseDto).toList();
-        return itemList;
+    public List<Item> getAll() {
+        return repository.findAll();
     }
 
     public Item getById(Long id) {

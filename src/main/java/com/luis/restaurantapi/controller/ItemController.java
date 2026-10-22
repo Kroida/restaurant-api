@@ -32,7 +32,12 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<List<ItemResponseDTO>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+        List<ItemResponseDTO> response = service.getAll()
+                .stream()
+                .map(ItemMapper::toResponseDto)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
