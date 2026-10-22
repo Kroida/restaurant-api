@@ -51,4 +51,17 @@ public class GlobalExceptionHandler {
 
         return problem;
     }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleServerInternalError(Exception exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        problem.setTitle("Erro interno do servidor");
+        problem.setDetail("Ocorreu um erro inesperado.");
+        problem.setProperty("error", "Server Internal Error");
+        problem.setProperty("code", "SERVER_INTERNAL_ERROR");
+        problem.setInstance(URI.create(request.getRequestURI()));
+
+        return problem;
+    }
 }
