@@ -3,6 +3,7 @@ package com.luis.restaurantapi.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +22,19 @@ public class GlobalExceptionHandler {
         problem.setDetail(exception.getMessage());
         problem.setProperty("error", "Not Found");
         problem.setProperty("code", "ITEM_NOT_FOUND");
+        problem.setInstance(URI.create(request.getRequestURI()));
+
+        return problem;
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ProblemDetail handleMethodNotAllowed(HttpRequestMethodNotSupportedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.METHOD_NOT_ALLOWED);
+
+        problem.setTitle("Método não permitido");
+        problem.setDetail("O método HTTP utilizado não é permitido para esta rota.");
+        problem.setProperty("error", "Method Not Allowed");
+        problem.setProperty("code", "METHOD_NOT_ALLOWED");
         problem.setInstance(URI.create(request.getRequestURI()));
 
         return problem;
