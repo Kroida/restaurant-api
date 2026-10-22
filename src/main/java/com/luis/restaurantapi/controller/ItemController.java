@@ -2,6 +2,7 @@ package com.luis.restaurantapi.controller;
 
 import com.luis.restaurantapi.dto.ItemRequestDTO;
 import com.luis.restaurantapi.dto.ItemResponseDTO;
+import com.luis.restaurantapi.mapper.ItemMapper;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.service.ItemService;
 import jakarta.validation.Valid;
@@ -21,12 +22,12 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemResponseDTO> create(@Valid @RequestBody ItemRequestDTO itemRequestDTO) {
-        Item item = service.create(itemRequestDTO);
+    public ResponseEntity<ItemResponseDTO> create(@Valid @RequestBody ItemRequestDTO requestDto) {
+        Item item = service.create(requestDto);
 
-        ItemResponseDTO itemResponseDTO = new ItemResponseDTO(item);
+        ItemResponseDTO responseDto = ItemMapper.toResponseDto(item);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping
@@ -38,18 +39,18 @@ public class ItemController {
     public ResponseEntity<ItemResponseDTO> getById(@PathVariable Long id) {
         Item item = service.getById(id);
 
-        ItemResponseDTO itemResponseDTO = new ItemResponseDTO(item);
+        ItemResponseDTO responseDto = ItemMapper.toResponseDto(item);
 
-        return ResponseEntity.ok(itemResponseDTO);
+        return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ItemResponseDTO> update(@PathVariable Long id, @Valid @RequestBody ItemRequestDTO itemRequestDTO) {
         Item item = service.update(id, itemRequestDTO);
 
-        ItemResponseDTO itemResponseDTO = new ItemResponseDTO(item);
+        ItemResponseDTO responseDto = ItemMapper.toResponseDto(item);
 
-        return ResponseEntity.ok(itemResponseDTO);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
