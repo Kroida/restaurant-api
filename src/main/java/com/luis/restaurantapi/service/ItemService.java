@@ -3,11 +3,11 @@ package com.luis.restaurantapi.service;
 import com.luis.restaurantapi.dto.ItemRequestDTO;
 import com.luis.restaurantapi.dto.ItemResponseDTO;
 import com.luis.restaurantapi.exception.ItemNotFoundException;
+import com.luis.restaurantapi.mapper.ItemMapper;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,14 +18,14 @@ public class ItemService {
         this.repository = repository;
     }
 
-    public Item create(ItemRequestDTO itemRequestDTO) {
-        Item item = new Item(itemRequestDTO);
+    public Item create(ItemRequestDTO dto) {
+        Item item = ItemMapper.toEntity(dto);
         repository.save(item);
         return item;
     }
 
     public List<ItemResponseDTO> getAll() {
-        List<ItemResponseDTO> itemList = repository.findAll().stream().map(ItemResponseDTO::new).toList();
+        List<ItemResponseDTO> itemList = repository.findAll().stream().map(ItemMapper::toResponseDto).toList();
         return itemList;
     }
 
@@ -34,20 +34,11 @@ public class ItemService {
         return item;
     }
 
-    public Item update(Long id, ItemRequestDTO itemRequestDTO) {
+    public Item update(Long id, ItemRequestDTO dto) {
         Item item = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
-
-        item.setName(itemRequestDTO.name());
-        item.setDescription(itemRequestDTO.description());
-        item.setQuantity(itemRequestDTO.quantity());
-        item.setPrice(itemRequestDTO.price());
-        item.setImageUrl(itemRequestDTO.imageUrl());
-
-        item.setUpdatedAt(LocalDateTime.now());
-
-        repository.save(item);
-
-        return item;
+        Item mapedItem = ItemMapper.updateEntity(item, dto);
+        repository.save(mapedItem);
+        return mapedItem;
     }
 
     public void delete(Long id) {

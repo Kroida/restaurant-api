@@ -29,4 +29,14 @@ public class ItemMapper {
                 item.getUpdatedAt()
         );
     }
+
+    public static Item updateEntity(Item item, ItemRequestDTO dto) {
+        item.setName(dto.name());
+        item.setDescription(dto.description());
+        item.setQuantity(dto.quantity());
+        item.setPrice(dto.price());
+        item.setImageUrl(dto.imageUrl());
+
+        return item;
+    }
 }
