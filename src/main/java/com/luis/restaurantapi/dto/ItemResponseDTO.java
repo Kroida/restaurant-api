@@ -1,7 +1,5 @@
 package com.luis.restaurantapi.dto;
 
-import com.luis.restaurantapi.model.Item;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
