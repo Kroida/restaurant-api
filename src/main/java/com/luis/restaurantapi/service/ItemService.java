@@ -39,9 +39,8 @@ public class ItemService {
     @Transactional
     public Item update(Long id, ItemRequestDTO dto) {
         Item item = repository.findById(id).orElseThrow(() -> new ItemNotFoundException("Item não encontrado"));
-        Item mapedItem = ItemMapper.updateEntity(item, dto);
-        repository.save(mapedItem);
-        return mapedItem;
+        ItemMapper.updateEntity(item, dto);
+        return item;
     }
 
     @Transactional
