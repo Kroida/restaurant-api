@@ -1,5 +1,6 @@
 package com.luis.restaurantapi.integration;
 
+import com.luis.restaurantapi.config.PostgresTestConfiguration;
 import com.luis.restaurantapi.dto.ItemRequestDTO;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.repository.ItemRepository;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Import(PostgresTestConfiguration.class)
 public class ItemIntegrationTest {
 
     @Autowired
