@@ -6,5 +6,9 @@ CREATE TABLE items (
     price NUMERIC(38, 2) NOT NULL,
     image_url VARCHAR(500),
     created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+
+    CONSTRAINT ck_items_name_not_blank CHECK (btrim(name) <> ''),
+    CONSTRAINT ck_items_quantity_nonnegative CHECK (quantity >= 0),
+    CONSTRAINT ck_items_price_positive CHECK (price > 0)
 );

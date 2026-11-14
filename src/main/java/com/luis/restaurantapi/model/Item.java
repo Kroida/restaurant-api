@@ -4,18 +4,32 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Entity
 @Table(name = "items")
-@Entity(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name", nullable = false, length = 120)
     private String name;
+
+    @Column(name = "description", length = 240)
     private String description;
+
+    @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "price", nullable = false, precision = 38, scale = 2)
     private BigDecimal price;
+
+    @Column(name = "image_url", length = 500)
     private String imageUrl;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public Item() {
