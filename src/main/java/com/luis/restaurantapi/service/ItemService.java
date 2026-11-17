@@ -5,6 +5,8 @@ import com.luis.restaurantapi.exception.ItemNotFoundException;
 import com.luis.restaurantapi.mapper.ItemMapper;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.repository.ItemRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +28,8 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<Item> getAll() {
-        return repository.findAll();
+    public Page<Item> getAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)

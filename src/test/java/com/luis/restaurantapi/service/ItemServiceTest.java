@@ -1,23 +1,25 @@
 package com.luis.restaurantapi.service;
 
+
 import com.luis.restaurantapi.dto.ItemRequestDTO;
 import com.luis.restaurantapi.exception.ItemNotFoundException;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.repository.ItemRepository;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceTest {
@@ -81,20 +83,28 @@ class ItemServiceTest {
     }
 
     @Test
-    void getAllDeveRetornarListaDeItens() {
+    void getAllDeveRetornarItensPaginados() {
+        Pageable pageable = PageRequest.of(0, 10);
+
         Item item1 = new Item();
         Item item2 = new Item();
 
-        when(repository.findAll())
-                .thenReturn(List.of(item1, item2));
+        Page<Item> pagina = new PageImpl<>(
+                List.of(item1, item2),
+                pageable,
+                2
+        );
 
-        List<Item> resultado = service.getAll();
+        when(repository.findAll(pageable))
+                .thenReturn(pagina);
 
-        assertEquals(2, resultado.size());
-        assertEquals(item1, resultado.get(0));
-        assertEquals(item2, resultado.get(1));
+        Page<Item> resultado = service.getAll(pageable);
 
-        verify(repository).findAll();
+        assertEquals(2, resultado.getContent().size());
+        assertEquals(2, resultado.getTotalElements());
+        assertEquals(1, resultado.getTotalPages());
+
+        verify(repository).findAll(pageable);
     }
 
     @Test

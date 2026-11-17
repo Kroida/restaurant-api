@@ -10,9 +10,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedModel;
 
 import java.util.List;
 
@@ -54,13 +60,11 @@ public class ItemController {
             )
     })
     @GetMapping
-    public ResponseEntity<List<ItemResponseDTO>> getAll() {
-        List<ItemResponseDTO> response = service.getAll()
-                .stream()
-                .map(ItemMapper::toResponseDto)
-                .toList();
+    public ResponseEntity<PagedModel<ItemResponseDTO>> getAll(@ParameterObject @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        Page<ItemResponseDTO> response = service.getAll(pageable)
+                .map(ItemMapper::toResponseDto);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new PagedModel<>(response));
     }
 
     @Operation(summary = "Procurar item", description = "Retorna via ID um item cadastrado no cardápio")
