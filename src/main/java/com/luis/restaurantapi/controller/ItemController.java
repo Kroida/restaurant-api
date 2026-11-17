@@ -19,6 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
+import java.net.URI;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -49,7 +51,15 @@ public class ItemController {
 
         ItemResponseDTO responseDto = ItemMapper.toResponseDto(item);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequestUri()
+                .path("/{id")
+                .buildAndExpand(item.getId())
+                .toUri();
+
+        return ResponseEntity
+                .created(location)
+                .body(responseDto);
     }
 
     @Operation(summary = "Listar itens", description = "Retorna todos os itens cadastrados no cardápio")
