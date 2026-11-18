@@ -36,6 +36,7 @@ public record ItemRequestDTO(
         )
         @NotNull(message = "O preço é obrigatório")
         @Positive(message = "O preço deve ser positivo")
+        @Digits(integer = 36, fraction = 2, message = "O preço deve ter no máximo 36 dígitos inteiros e 2 casas decimais")
         BigDecimal price,
 
         @Schema(

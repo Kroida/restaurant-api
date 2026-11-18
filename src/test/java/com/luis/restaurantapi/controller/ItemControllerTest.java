@@ -11,9 +11,12 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.util.List;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.data.domain.Page;
@@ -49,6 +52,7 @@ class ItemControllerTest {
         item.setQuantity(dto.quantity());
         item.setPrice(dto.price());
         item.setImageUrl(dto.imageUrl());
+        ReflectionTestUtils.setField(item, "id", 1L);
 
         when(service.create(any(ItemRequestDTO.class)))
                 .thenReturn(item);
@@ -59,6 +63,8 @@ class ItemControllerTest {
                                 .content(objectMapper.writeValueAsString(dto))
                 )
                 .andExpect(status().isCreated())
+                .andExpect(header().string("Location", endsWith("/items/1")))
+                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Hambúrguer"))
                 .andExpect(jsonPath("$.price").value(25.90));
 
@@ -185,5 +191,53 @@ class ItemControllerTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("ITEM_NOT_VALID"));
+    }
+
+    @Test
+    void getByIdDeveRetornar400QuandoIdNaoForNumero() throws Exception {
+        mockMvc.perform(get("/items/abc"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createDeveRetornar400QuandoJsonForInvalido() throws Exception {
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{json-invalido"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createDeveRetornar415QuandoMidiaNaoForSuportada() throws Exception {
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content("invalido"))
+                .andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
+    void patchDeveRetornar405ComAllow() throws Exception {
+        mockMvc.perform(patch("/items/1"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(header().exists("Allow"))
+                .andExpect(header().string("Allow", containsString("GET")));
+    }
+
+    @Test
+    void createDeveRetornar400QuandoPrecoPossuirTresCasasDecimais() throws Exception {
+        ItemRequestDTO dto = new ItemRequestDTO(
+                "Pizza", "Pizza especial", 1,
+                new BigDecimal("29.999"),
+                "https://imagem.com/pizza.jpg"
+        );
+
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("ITEM_NOT_VALID"))
+                .andExpect(jsonPath("$.fields.price").exists());
+
+        verify(service, never()).create(any(ItemRequestDTO.class));
     }
 }
