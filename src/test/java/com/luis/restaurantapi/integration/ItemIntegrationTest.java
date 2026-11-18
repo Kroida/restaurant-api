@@ -111,9 +111,12 @@ public class ItemIntegrationTest {
 
         mockMvc.perform(get("/items"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[*].name",
-                        hasItems("Hambúrguer", "Pizza")));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[*].name",
+                        hasItems("Hambúrguer", "Pizza")))
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.page.totalPages").value(1));
+
     }
 
     @Test

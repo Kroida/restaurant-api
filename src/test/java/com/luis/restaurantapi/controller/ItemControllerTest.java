@@ -5,21 +5,21 @@ import com.luis.restaurantapi.dto.ItemRequestDTO;
 import com.luis.restaurantapi.exception.ItemNotFoundException;
 import com.luis.restaurantapi.model.Item;
 import com.luis.restaurantapi.service.ItemService;
-
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.math.BigDecimal;
 import java.util.List;
-
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @WebMvcTest(ItemController.class)
 class ItemControllerTest {
@@ -73,17 +73,30 @@ class ItemControllerTest {
         Item item2 = new Item();
         item2.setName("Hambúrguer");
 
-        when(service.getAll())
-                .thenReturn(List.of(item1, item2));
+        // Simula uma página contendo dois itens cadastrados.
+        Page<Item> pagina = new PageImpl<>(
+                List.of(item1, item2),
+                PageRequest.of(0, 10),
+                2
+        );
 
+        // Configura o Service para retornar os itens paginados.
+        when(service.getAll(any(Pageable.class)))
+                .thenReturn(pagina);
+
+        // Valida a resposta HTTP e a estrutura paginada.
         mockMvc.perform(get("/items"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].name").value("Pizza"))
-                .andExpect(jsonPath("$[1].name").value("Hambúrguer"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].name").value("Pizza"))
+                .andExpect(jsonPath("$.content[1].name").value("Hambúrguer"))
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.page.totalPages").value(1));
 
-        verify(service).getAll();
+        // Verifica se o Service foi chamado com a paginação.
+        verify(service).getAll(any(Pageable.class));
     }
+
 
     @Test
     void getByIdDeveRetornar200QuandoExistir() throws Exception {

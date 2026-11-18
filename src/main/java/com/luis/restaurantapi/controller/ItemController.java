@@ -10,8 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springdoc.core.annotations.ParameterObject;
@@ -22,7 +20,6 @@ import org.springframework.data.web.PagedModel;
 import java.net.URI;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
 
 @Tag(name = "Itens do cardápio", description = "Operações de gerenciamento dos itens do restaurante")
 @RestController
@@ -53,7 +50,7 @@ public class ItemController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
-                .path("/{id")
+                .path("/{id}")
                 .buildAndExpand(item.getId())
                 .toUri();
 
